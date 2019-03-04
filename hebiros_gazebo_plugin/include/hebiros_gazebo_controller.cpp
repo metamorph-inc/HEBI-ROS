@@ -74,7 +74,7 @@ void HebirosGazeboController::SetSettings(std::shared_ptr<HebirosGazeboGroup> he
 //Initialize gains with default values based on model and control strategy
 void HebirosGazeboController::SetDefaultGains(std::shared_ptr<HebirosGazeboGroup> hebiros_group,
   std::shared_ptr<HebirosGazeboJoint> hebiros_joint) {
-  
+
   std::string model_name = hebiros_joint->model_name;
   int i = hebiros_joint->command_index;
   int control_strategy = hebiros_group->settings.control_strategy[i];
@@ -452,12 +452,12 @@ double HebirosGazeboController::ComputeForce(std::shared_ptr<HebirosGazeboGroup>
   float prev_winding_temp = hebiros_joint->temperature.getMotorWindingTemperature();
 
   // Get components of power into the motor
-  
+
   // Temperature compensated speed constant
-  float comp_speed_constant = speed_constant * 1.05f * // Experimental tuning factor                           
-    (1.f + .001f * (prev_winding_temp - 20.f)); // .001 is speed constant change per temperature change 
-  float winding_resistance = term_resist * 
-    (1.f + .004f * (prev_winding_temp - 20.f)); // .004 is resistance change per temperature change for copper 
+  float comp_speed_constant = speed_constant * 1.05f * // Experimental tuning factor
+    (1.f + .001f * (prev_winding_temp - 20.f)); // .001 is speed constant change per temperature change
+  float winding_resistance = term_resist *
+    (1.f + .004f * (prev_winding_temp - 20.f)); // .004 is resistance change per temperature change for copper
   float back_emf = (motor_velocity * 30.f / M_PI) / comp_speed_constant;
   float winding_voltage = pwm * voltage - back_emf;
 
@@ -469,9 +469,9 @@ double HebirosGazeboController::ComputeForce(std::shared_ptr<HebirosGazeboGroup>
   hebiros_joint->temperature.update(power_in, iteration_time.toSec());
   hebiros_joint->temperature_safety.update(hebiros_joint->temperature.getMotorWindingTemperature());
 
-  //alpha = hebiros_joint->low_pass_alpha;
-  //force = (force * alpha) + hebiros_joint->prev_force * (1 - alpha);
-  //hebiros_joint->prev_force = force;
+  alpha = hebiros_joint->low_pass_alpha;
+  force = (force * alpha) + hebiros_joint->prev_force * (1 - alpha);
+  hebiros_joint->prev_force = force;
 
   return force;
 }
@@ -555,4 +555,3 @@ double HebirosGazeboController::ComputeEffortPID(std::shared_ptr<HebirosGazeboGr
 double HebirosGazeboController::Clip(double x, double low, double high) {
   return std::min(std::max(x, low), high);
 }
-

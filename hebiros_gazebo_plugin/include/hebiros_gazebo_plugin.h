@@ -44,9 +44,11 @@ private:
   ros::ServiceServer add_group_srv;
   ros::ServiceServer acknowledge_srv;
 
+  double prev_effort{0.0};
+  double low_pass_alpha{0.1};
+
   void AddJointToGroup(std::shared_ptr<HebirosGazeboGroup> hebiros_group, std::string joint_name);
   void UpdateGroup(std::shared_ptr<HebirosGazeboGroup> hebiros_group, const ros::Duration& iteration_time);
-
   bool SrvAddGroup(AddGroupFromNamesSrv::Request &req, AddGroupFromNamesSrv::Response &res);
 
 };
