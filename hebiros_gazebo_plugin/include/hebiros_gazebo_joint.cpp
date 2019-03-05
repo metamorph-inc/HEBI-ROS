@@ -10,7 +10,7 @@ HebirosGazeboJoint::HebirosGazeboJoint(const std::string& name_,
       hebiros::sim::TemperatureModel::createX5()) {
   this->imu_subscriber = n->subscribe<sensor_msgs::Imu>(
     "hebiros_gazebo_plugin/imu/"+name,
-    100, boost::bind(&HebirosGazeboJoint::SubIMU, this, _1));
+    300, boost::bind(&HebirosGazeboJoint::SubIMU, this, _1));
 }
 
 //Subscriber which receives IMU feedback from gazebo
@@ -20,7 +20,7 @@ void HebirosGazeboJoint::SubIMU(const boost::shared_ptr<sensor_msgs::Imu const> 
 }
 
 bool HebirosGazeboJoint::isX8() const {
-  return (model_name == "X8_3" || 
+  return (model_name == "X8_3" ||
           model_name == "X8_9" ||
           model_name == "X8_16");
 }
