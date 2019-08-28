@@ -4,7 +4,10 @@
 * You can move forward/backward, left/right, or rotate in spot.
 * 
 * @author Hardik Singh < hardik @ hebirobotics.com >
-* @since 6 Jul 2018
+* @since Jul 6 2018
+*
+* @author Sami Mian < sami @ hebirobotics.com >
+* @Updated Feb 2 2019
 **/
 
 #include <ros/ros.h>
@@ -21,7 +24,7 @@ sensor_msgs::JointState feedback;
 geometry_msgs::Twist directions;
 std::array<double, 3> omniVels; 
 std::array<double, 3> omniPos;
-double rate_of_command = 60;
+double rate_of_command = 100;
 bool feedback_init = false;
 bool keys_init = false;
 
@@ -42,24 +45,24 @@ void directions_callback(geometry_msgs::Twist data) {
 void updateOmniVels() {
   /* Declare main kinematic variables */
   double wheelRadius = 0.0762; // m
-  double baseRadius = 0.235; // m (center of omni to origin of base)
+  double baseRadius = 0.220; // m (center of omni to origin of base)
   double speed = 0.3; // m/s
   double wheelRotSpeed = M_PI/3; // (rad/s)
   double ratio = sqrt(3)/2;
 
   // Wheel 1, front right
-  omniVels[0] = directions.linear.x * speed * 0.5/wheelRadius + 
-                directions.linear.y * speed * -ratio/wheelRadius +
+  omniVels[0] = directions.linear.x * -speed * ratio/wheelRadius +
+                directions.linear.y * -speed * 0.5/wheelRadius + 
                 directions.angular.z * wheelRotSpeed * baseRadius/wheelRadius;
 
   // Wheel 2, front left
-  omniVels[1] = directions.linear.x * speed * 0.5/wheelRadius + 
-                directions.linear.y * speed * ratio/wheelRadius +
-                directions.angular.z *wheelRotSpeed *  baseRadius/wheelRadius;
+  omniVels[1] = directions.linear.x * speed * ratio/wheelRadius +
+                directions.linear.y * -speed * 0.5/wheelRadius + 
+                directions.angular.z * wheelRotSpeed *  baseRadius/wheelRadius;
 
   // Wheel 3, back center
-  omniVels[2] = directions.linear.x * -speed * 1/wheelRadius + 
-                0 +
+  omniVels[2] = 0 +
+                directions.linear.y * speed * 1/wheelRadius + 
                 directions.angular.z * wheelRotSpeed * baseRadius/wheelRadius;
 }
 
@@ -85,7 +88,7 @@ int main(int argc, char ** argv) {
 
   ros::Rate loop_rate(rate_of_command);
 
-  ros::Subscriber key_subscriber = node.subscribe("keys/cmd_vel", 20,
+  ros::Subscriber key_subscriber = node.subscribe("cmd_vel", 20,
                            directions_callback);
 
   ////////////////////////////////////////////////////////////////////////////
@@ -110,16 +113,16 @@ int main(int argc, char ** argv) {
   // Construct the group using 3 known modules, connected to the network
   AddGroupFromNamesSrv add_group_srv;
   add_group_srv.request.group_name = group_name;
-  add_group_srv.request.names = {"_Wheel1", "_Wheel2", "_Wheel3"};
+  add_group_srv.request.names = {"Wheel1", "Wheel2", "Wheel3"};
   add_group_srv.request.families = {"Rosie"};
 
   // Call the add_group_from_urdf service to create a group until it succeeds
   while(!add_group_client.call(add_group_srv)) {}
 
   sensor_msgs::JointState command_msg;
-  command_msg.name.push_back("Rosie/_Wheel1");
-  command_msg.name.push_back("Rosie/_Wheel2");
-  command_msg.name.push_back("Rosie/_Wheel3");
+  command_msg.name.push_back("Rosie/Wheel1");
+  command_msg.name.push_back("Rosie/Wheel2");
+  command_msg.name.push_back("Rosie/Wheel3");
 
   command_msg.velocity.resize(3);
   command_msg.position.resize(3);

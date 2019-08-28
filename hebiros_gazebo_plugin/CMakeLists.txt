@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(hebiros_gazebo_plugin)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-#add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -113,9 +113,6 @@ find_package(gazebo REQUIRED)
 catkin_package(
   #INCLUDE_DIRS include
 
-  #LIBRARIES
-  #boilerplate_motor_plugin
-
   CATKIN_DEPENDS
   gazebo_ros
   gazebo_plugins
@@ -133,36 +130,32 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  #include
+  sim
   ${catkin_INCLUDE_DIRS}
 )
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
-include_directories(include)
+include_directories(plugin_base plugin_hebiros)
 include_directories( ${catkin_INCLUDE_DIRS}
                      ${Boost_INCLUDE_DIR}
                      ${GAZEBO_INCLUDE_DIRS}
 )
 
 add_library(hebiros_gazebo_plugin 
-  plugin/hebiros_gazebo_plugin.cpp
-  include/hebiros_gazebo_group.cpp
-  include/hebiros_gazebo_joint.cpp
-  include/hebiros_temperature_model.cpp
-  include/temperature_safety_controller.cpp
-  include/hebiros_gazebo_controller.cpp)
+  plugin_base/hebi_gazebo_plugin.cpp
+  plugin_hebiros/hebiros_gazebo_plugin.cpp
+  plugin_hebiros/hebiros_gazebo_group.cpp
+  sim/pid_controller.cpp
+  sim/joint.cpp
+  sim/temperature_model.cpp
+  sim/temperature_safety_controller.cpp)
 
 add_dependencies(hebiros_gazebo_plugin ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries( hebiros_gazebo_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} )
-
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/plugin/boilerplate_motor_plugin.cpp
-# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
