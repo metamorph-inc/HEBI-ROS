@@ -439,7 +439,7 @@ double HebirosGazeboController::ComputeForce(std::shared_ptr<HebirosGazeboGroup>
     term_resist = 3.19f;
   }
 
-  pwm = hebiros_joint->temperature_safety.limit(pwm);
+  //pwm = hebiros_joint->temperature_safety.limit(pwm);
 
   if (pwm == 0) {
     force = 0;
