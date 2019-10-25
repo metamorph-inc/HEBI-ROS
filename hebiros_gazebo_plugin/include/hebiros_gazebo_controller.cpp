@@ -446,7 +446,9 @@ double HebirosGazeboController::ComputeForce(std::shared_ptr<HebirosGazeboGroup>
   }
   else {
     // TODO: use temp compensation here, too?
-    force = ((pwm*voltage - (motor_velocity/speed_constant)) / term_resist) * 0.00626 * gear_ratio * 0.65;
+    force = ((pwm * voltage - ((motor_velocity * 30.f / M_PI) / speed_constant)) / term_resist) * 0.00626 * gear_ratio * 0.65;
+
+    
   }
 
   float prev_winding_temp = hebiros_joint->temperature.getMotorWindingTemperature();
