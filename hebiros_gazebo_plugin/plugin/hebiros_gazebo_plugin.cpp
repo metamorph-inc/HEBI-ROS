@@ -1,4 +1,4 @@
-#include <hebiros_gazebo_plugin.h>
+#include "hebiros_gazebo_plugin.h"
 
 //Load the model and sdf from Gazebo
 void HebirosGazeboPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
@@ -69,11 +69,11 @@ void HebirosGazeboPlugin::UpdateGroup(std::shared_ptr<HebirosGazeboGroup> hebiro
       int i = hebiros_joint->feedback_index;
 
       joint->SetProvideFeedback(true);
-      double position = joint->GetAngle(0).Radian();
+      double position = joint->Position(0);
       double velocity = joint->GetVelocity(0);
       physics::JointWrench wrench = joint->GetForceTorque(0);
-      auto trans = joint->GetChild()->GetInitialRelativePose().rot;
-      double effort = (-1 * (trans * wrench.body1Torque)).z;
+      auto trans = joint->GetChild()->InitialRelativePose().Rot();
+      double effort = (-1 * (trans * wrench.body1Torque)).Z();
 
       hebiros_group->feedback.position[i] = position;
       hebiros_group->feedback.velocity[i] = velocity;
